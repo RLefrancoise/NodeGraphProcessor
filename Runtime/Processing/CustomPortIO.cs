@@ -25,7 +25,7 @@ namespace GraphProcessor
 		{
 			BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-			foreach (var type in AppDomain.CurrentDomain.GetAllTypes())
+			foreach (var type in TypeExtension.GetAllTypesDerivedFrom<BaseNode>())
 			{
 				if (type.IsAbstract || type.ContainsGenericParameters)
 					continue ;
@@ -41,7 +41,7 @@ namespace GraphProcessor
 
 					if (portInputAttr == null && portOutputAttr == null)
 						continue ;
-					
+
 					var p = method.GetParameters();
 					bool nodePortSignature = false;
 

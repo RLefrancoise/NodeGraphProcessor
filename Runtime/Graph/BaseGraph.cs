@@ -36,7 +36,7 @@ namespace GraphProcessor
 	public class BaseGraph : ScriptableObject, ISerializationCallbackReceiver
 	{
 		static readonly int			maxComputeOrderDepth = 1000;
-		
+
 		/// <summary>Invalid compute order number of a node when it's inside a loop</summary>
 		public static readonly int loopComputeOrder = -2;
 		/// <summary>Invalid compute order number of a node can't process</summary>
@@ -160,7 +160,7 @@ namespace GraphProcessor
 		[System.NonSerialized]
 		bool _isEnabled = false;
 		public bool isEnabled { get => _isEnabled; private set => _isEnabled = value; }
-		
+
 		public HashSet< BaseNode >		graphOutputs { get; private set; } = new HashSet<BaseNode>();
 
         protected virtual void OnEnable()
@@ -259,7 +259,7 @@ namespace GraphProcessor
 		public SerializableEdge Connect(NodePort inputPort, NodePort outputPort, bool autoDisconnectInputs = true)
 		{
 			var edge = SerializableEdge.CreateNewEdge(this, inputPort, outputPort);
-			
+
 			//If the input port does not support multi-connection, we remove them
 			if (autoDisconnectInputs && !inputPort.portData.acceptMultipleEdges)
 			{
@@ -280,7 +280,7 @@ namespace GraphProcessor
 			}
 
 			edges.Add(edge);
-			
+
 			// Add the edge to the list of connected edges in the nodes
 			inputPort.owner.OnEdgeConnected(edge);
 			outputPort.owner.OnEdgeConnected(edge);
@@ -374,7 +374,7 @@ namespace GraphProcessor
 			stackNodes.Add(stackNode);
 			onGraphChanges?.Invoke(new GraphChanges{ addedStackNode = stackNode });
 		}
-		
+
 		/// <summary>
 		/// Remove a StackNode
 		/// </summary>
@@ -386,7 +386,7 @@ namespace GraphProcessor
 		}
 
 		/// <summary>
-		/// Add a sticky note 
+		/// Add a sticky note
 		/// </summary>
 		/// <param name="note"></param>
         public void AddStickyNote(StickyNote note)
@@ -396,7 +396,7 @@ namespace GraphProcessor
         }
 
 		/// <summary>
-		/// Removes a sticky note 
+		/// Removes a sticky note
 		/// </summary>
 		/// <param name="note"></param>
         public void RemoveStickyNote(StickyNote note)
@@ -406,7 +406,7 @@ namespace GraphProcessor
         }
 
 		/// <summary>
-		/// Invoke the onGraphChanges event, can be used as trigger to execute the graph when the content of a node is changed 
+		/// Invoke the onGraphChanges event, can be used as trigger to execute the graph when the content of a node is changed
 		/// </summary>
 		/// <param name="node"></param>
 		public void NotifyNodeChanged(BaseNode node) => onGraphChanges?.Invoke(new GraphChanges { nodeChanged = node });
@@ -517,7 +517,7 @@ namespace GraphProcessor
 			graphOutputs.Clear();
 			foreach (var node in nodes)
 			{
-				if (node.GetOutputNodes().Count() == 0)
+				if (!node.GetOutputNodes().Any())
 					graphOutputs.Add(node);
 				node.computeOrder = 0;
 			}
@@ -558,7 +558,7 @@ namespace GraphProcessor
 			// patch value with correct type:
 			if (param.GetValueType().IsValueType)
 				value = Activator.CreateInstance(param.GetValueType());
-			
+
 			param.Initialize(name, value);
 			exposedParameters.Add(param);
 
@@ -619,7 +619,7 @@ namespace GraphProcessor
 			if (param == null)
 				return;
 
-			if (value != null && !param.GetValueType().IsAssignableFrom(value.GetType()))
+			if (value != null && !param.GetValueType().IsInstanceOfType(value))
 				throw new Exception("Type mismatch when updating parameter " + param.name + ": from " + param.GetValueType() + " to " + value.GetType().AssemblyQualifiedName);
 
 			param.value = value;
@@ -773,8 +773,6 @@ namespace GraphProcessor
 
 		void UpdateComputeOrderDepthFirst()
 		{
-			Stack<BaseNode> dfs = new Stack<BaseNode>();
-
 			GraphUtils.FindCyclesInGraph(this, (n) => {
 				PropagateComputeOrder(n, loopComputeOrder);
 			});
@@ -801,7 +799,7 @@ namespace GraphProcessor
 			{
 				var n = deps.Pop();
 				n.computeOrder = computeOrder;
-			
+
 				if (!loop.Add(n))
 					continue;
 
@@ -819,7 +817,7 @@ namespace GraphProcessor
 			);
 			nodes.RemoveAll(n => n == null);
 		}
-		
+
 		/// <summary>
 		/// Tell if two types can be connected in the context of a graph
 		/// </summary>

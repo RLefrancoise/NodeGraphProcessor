@@ -19,9 +19,9 @@ namespace GraphProcessor
 
 		static FieldFactory()
 		{
-			foreach (var type in AppDomain.CurrentDomain.GetAllTypes())
+			foreach (var (type, drawerAttribute) in TypeExtension.GetAllTypesWithAttribute<FieldDrawerAttribute>())
 			{
-				var drawerAttribute = type.GetCustomAttributes(typeof(FieldDrawerAttribute), false).FirstOrDefault() as FieldDrawerAttribute;
+				//var drawerAttribute = type.GetCustomAttributes(typeof(FieldDrawerAttribute), false).FirstOrDefault() as FieldDrawerAttribute;
 
 				if (drawerAttribute == null)
 					continue ;
@@ -85,7 +85,7 @@ namespace GraphProcessor
 
 			// Call the constructor that have a label
 			object field;
-			
+
 			if (drawerType == typeof(EnumField))
 			{
 				field = new EnumField(label, Activator.CreateInstance(t) as Enum);
@@ -97,7 +97,7 @@ namespace GraphProcessor
 						BindingFlags.CreateInstance |
 						BindingFlags.Public |
 						BindingFlags.NonPublic |
-						BindingFlags.Instance | 
+						BindingFlags.Instance |
 						BindingFlags.OptionalParamBinding, null,
 						new object[]{ label, Type.Missing }, CultureInfo.CurrentCulture);
 				} catch {
@@ -105,7 +105,7 @@ namespace GraphProcessor
 						BindingFlags.CreateInstance |
 						BindingFlags.Public |
 						BindingFlags.NonPublic |
-						BindingFlags.Instance | 
+						BindingFlags.Instance |
 						BindingFlags.OptionalParamBinding, null,
 						new object[]{ label }, CultureInfo.CurrentCulture);
 				}
@@ -122,7 +122,7 @@ namespace GraphProcessor
 					objField.objectType = typeof(UnityEngine.Object);
 					break;
 			}
-			
+
 			return field as VisualElement;
 		}
 

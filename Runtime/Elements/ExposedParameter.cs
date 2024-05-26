@@ -75,7 +75,7 @@ namespace GraphProcessor
         {
             if (exposedParameterTypeCache.Count == 0)
             {
-                foreach (var type in AppDomain.CurrentDomain.GetAllTypes())
+                foreach (var type in TypeExtension.GetAllTypesDerivedFrom<ExposedParameter>())
                 {
                     if (type.IsSubclassOf(typeof(ExposedParameter)) && !type.IsAbstract)
                     {
@@ -89,7 +89,7 @@ namespace GraphProcessor
 #pragma warning restore CS0618
             if (oldType == null || !exposedParameterTypeCache.TryGetValue(oldType, out var newParamType))
                 return null;
-            
+
             var newParam = Activator.CreateInstance(newParamType) as ExposedParameter;
 
             newParam.guid = guid;
@@ -99,7 +99,7 @@ namespace GraphProcessor
             newParam.settings.guid = guid;
 
             return newParam;
-     
+
         }
 
         public static bool operator ==(ExposedParameter param1, ExposedParameter param2)

@@ -46,13 +46,13 @@ namespace GraphProcessor
 
         static void LoadAllAdapters()
         {
-            foreach (Type type in AppDomain.CurrentDomain.GetAllTypes())
+            foreach (Type type in TypeExtension.GetAllTypesDerivedFrom<ITypeAdapter>())
             {
-                if (typeof(ITypeAdapter).IsAssignableFrom(type))
+                //if (typeof(ITypeAdapter).IsAssignableFrom(type))
                 {
                     if (type.IsAbstract)
                         continue;
-                    
+
                     var adapter = Activator.CreateInstance(type) as ITypeAdapter;
                     if (adapter != null)
                     {
@@ -62,7 +62,7 @@ namespace GraphProcessor
                             incompatibleTypes.Add((types.Item2, types.Item1));
                         }
                     }
-                    
+
                     foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                     {
                         if (method.GetParameters().Length != 1)
@@ -84,9 +84,9 @@ namespace GraphProcessor
                             // IL2CPP doesn't suport calling generic functions via reflection (AOT can't generate templated code)
                             Func<object, object> r = (object param) => { return (object)method.Invoke(null, new object[]{ param }); };
 #else
-                            MethodInfo genericHelper = typeof(TypeAdapter).GetMethod("ConvertTypeMethodHelper", 
+                            MethodInfo genericHelper = typeof(TypeAdapter).GetMethod("ConvertTypeMethodHelper",
                                 BindingFlags.Static | BindingFlags.NonPublic);
-                            
+
                             // Now supply the type arguments
                             MethodInfo constructedHelper = genericHelper.MakeGenericMethod(from, to);
 
@@ -125,7 +125,7 @@ namespace GraphProcessor
         {
             if (!adaptersLoaded)
                 LoadAllAdapters();
-            
+
             if (AreIncompatible(from, to))
                 return false;
 
