@@ -114,7 +114,6 @@ namespace GraphProcessor
 		/// <summary>
 		/// Object to handle nodes that shows their UI in the inspector.
 		/// </summary>
-		[SerializeField]
 		protected NodeInspectorObject		nodeInspector
 		{
 			get
@@ -270,7 +269,7 @@ namespace GraphProcessor
 				foreach (var guid in oldGUIDList)
 				{
 					graph.nodesPerGUID.TryGetValue(guid, out var node);
-					
+
 					// In case group was copied from another graph
 					if (node == null)
 					{
@@ -1124,7 +1123,7 @@ namespace GraphProcessor
 		{
 			if (!CanConnectEdge(e, autoDisconnectInputs))
 				return false;
-			
+
 			var inputPortView = e.input as PortView;
 			var outputPortView = e.output as PortView;
 			var inputNodeView = inputPortView.node as BaseNodeView;
